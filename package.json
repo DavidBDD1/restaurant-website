@@ -1,0 +1,25 @@
+{
+  "name": "restaurant-website",
+  "version": "1.0.0",
+  "description": "Restaurant Website mit Reservation und Adminbereich",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidBDD1/restaurant-website.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DavidBDD1/restaurant-website/issues"
+  },
+  "homepage": "https://github.com/DavidBDD1/restaurant-website#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
