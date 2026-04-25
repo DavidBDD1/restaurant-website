@@ -1,8 +1,6 @@
-// Heutiges Datum als Minimum setzen (kein Datum in der Vergangenheit)
+// Heutiges Datum als Minimum setzen
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('date').setAttribute('min', today);
-
-// Standard-Uhrzeit setzen
 document.getElementById('time').setAttribute('min', '11:00');
 document.getElementById('time').setAttribute('max', '22:00');
 
@@ -15,7 +13,7 @@ form.addEventListener('submit', async function (e) {
 
   // Uhrzeit prüfen
   const time = document.getElementById('time').value;
-  const [hours, minutes] = time.split(':').map(Number);
+  const [hours] = time.split(':').map(Number);
   if (hours < 11 || hours >= 22) {
     statusMsg.textContent = '✗ Bitte wählen Sie eine Uhrzeit zwischen 11:00 und 22:00 Uhr.';
     statusMsg.className = 'error';
@@ -48,9 +46,10 @@ form.addEventListener('submit', async function (e) {
     const ergebnis = await antwort.json();
 
     if (antwort.ok) {
-      // Formular verstecken und Bestätigung zeigen
       form.style.display = 'none';
       statusMsg.innerHTML = `
+
+        <!-- Bestätigung -->
         <div class="success-box">
           <div class="success-icon">✓</div>
           <h2>Vielen Dank, ${daten.name}!</h2>
@@ -76,6 +75,72 @@ form.addEventListener('submit', async function (e) {
           <p class="success-note">Wir werden uns in Kürze bei Ihnen melden.</p>
           <a href="index.html" class="btn" style="margin-top:1.5rem; display:inline-block;">Zurück zur Startseite</a>
         </div>
+
+        <!-- E-Mail Simulation -->
+        <div class="email-preview">
+          <div class="email-header">
+            <span class="email-label">📧 Simulierte Bestätigungs-E-Mail</span>
+          </div>
+          <div class="email-body">
+            <div class="email-meta">
+              <div class="email-meta-row">
+                <span class="email-meta-label">Von:</span>
+                <span>info@bellaitalia.ch</span>
+              </div>
+              <div class="email-meta-row">
+                <span class="email-meta-label">An:</span>
+                <span>${daten.email}</span>
+              </div>
+              <div class="email-meta-row">
+                <span class="email-meta-label">Betreff:</span>
+                <span>Reservationsbestätigung – Bella Italia</span>
+              </div>
+            </div>
+
+            <div class="email-content">
+              <div class="email-logo">Bella <span>Italia</span></div>
+              <div class="email-flag">
+                <div class="eg"></div><div class="ew"></div><div class="er"></div>
+              </div>
+
+              <p class="email-greeting">Guten Tag, ${daten.name}</p>
+              <p class="email-text">Vielen Dank für Ihre Reservation. Wir freuen uns, Sie bei uns begrüssen zu dürfen!</p>
+
+              <div class="email-details">
+                <div class="email-detail-row">
+                  <span>📅 Datum</span>
+                  <strong>${formatDate(daten.date)}</strong>
+                </div>
+                <div class="email-detail-row">
+                  <span>🕐 Uhrzeit</span>
+                  <strong>${daten.time} Uhr</strong>
+                </div>
+                <div class="email-detail-row">
+                  <span>👥 Personen</span>
+                  <strong>${daten.guests}</strong>
+                </div>
+                ${daten.phone ? `
+                <div class="email-detail-row">
+                  <span>📞 Telefon</span>
+                  <strong>${daten.phone}</strong>
+                </div>` : ''}
+                ${daten.message ? `
+                <div class="email-detail-row">
+                  <span>💬 Nachricht</span>
+                  <strong>${daten.message}</strong>
+                </div>` : ''}
+              </div>
+
+              <p class="email-text">Bei Fragen erreichen Sie uns unter <strong>041 123 45 67</strong> oder <strong>info@bellaitalia.ch</strong>.</p>
+              <p class="email-text">Wir freuen uns auf Ihren Besuch!</p>
+              <p class="email-sign">Herzliche Grüsse<br><strong>Das Team von Bella Italia</strong></p>
+
+              <div class="email-footer-bar">
+                <p>Bella Italia · Musterstrasse 12 · 6000 Luzern</p>
+              </div>
+            </div>
+          </div>
+        </div>
       `;
       statusMsg.style.display = 'block';
       statusMsg.className = '';
@@ -96,7 +161,6 @@ form.addEventListener('submit', async function (e) {
   submitBtn.textContent = 'Reservation absenden';
 });
 
-// Datum formatieren: 2025-06-15 → 15. Juni 2025
 function formatDate(dateStr) {
   const months = ['Januar','Februar','März','April','Mai','Juni',
                   'Juli','August','September','Oktober','November','Dezember'];

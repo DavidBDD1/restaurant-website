@@ -96,6 +96,11 @@ app.delete("/api/reservations/:id", (req,res) => {
   );
 });
 
+// 404 Seite
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
+
 app.listen(PORT, () => {
  console.log(`Server läuft auf http://localhost:${PORT}`);
 });
