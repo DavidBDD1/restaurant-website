@@ -1,11 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // ============================================
-  // DATEN – kommen jetzt aus der echten Datenbank
-  // ============================================
   let reservations = [];
 
-  // Status: server speichert 'offen'/'bestätigt'/'storniert' (Deutsch)
   const statusLabels = {
     'offen':      'Offen',
     'bestätigt':  'Bestätigt',
@@ -18,55 +14,41 @@ document.addEventListener('DOMContentLoaded', () => {
     'storniert': 'cancelled',
   };
 
-  // ============================================
-  // ELEMENTE
-  // ============================================
-  const navButtons           = document.querySelectorAll('.nav__link');
-  const panels               = document.querySelectorAll('.panel');
-  const nav                  = document.getElementById('primary-nav');
-  const mobileToggle         = document.querySelector('.mobile-nav-toggle');
+  const navButtons            = document.querySelectorAll('.nav__link');
+  const panels                = document.querySelectorAll('.panel');
+  const nav                   = document.getElementById('primary-nav');
+  const mobileToggle          = document.querySelector('.mobile-nav-toggle');
+  const overviewDayFilter     = document.getElementById('overview-day-filter');
+  const overviewStatusFilter  = document.getElementById('overview-status-filter');
+  const reservationsDayFilter = document.getElementById('reservations-day-filter');
+  const tablesDayFilter       = document.getElementById('tables-day-filter');
+  const overviewTbody         = document.getElementById('overview-tbody');
+  const reservationsTbody     = document.getElementById('reservations-tbody');
+  const tablesGrid            = document.getElementById('tables-grid');
+  const kpiTotal              = document.getElementById('kpi-total');
+  const kpiOpen               = document.getElementById('kpi-open');
+  const kpiConfirmed          = document.getElementById('kpi-confirmed');
+  const todayDate             = document.getElementById('today-date');
+  const newReservationForm    = document.getElementById('new-reservation-form');
+  const searchInput           = document.getElementById('search-input');
 
-  const overviewDayFilter    = document.getElementById('overview-day-filter');
-  const overviewStatusFilter = document.getElementById('overview-status-filter');
-  const reservationsDayFilter= document.getElementById('reservations-day-filter');
-  const tablesDayFilter      = document.getElementById('tables-day-filter');
-
-  const overviewTbody        = document.getElementById('overview-tbody');
-  const reservationsTbody    = document.getElementById('reservations-tbody');
-  const tablesGrid           = document.getElementById('tables-grid');
-
-  const kpiTotal             = document.getElementById('kpi-total');
-  const kpiOpen              = document.getElementById('kpi-open');
-  const kpiConfirmed         = document.getElementById('kpi-confirmed');
-
-  const todayDate            = document.getElementById('today-date');
-  const newReservationForm   = document.getElementById('new-reservation-form');
-
-  // ============================================
-  // HEUTIGES DATUM
-  // ============================================
   if (todayDate) {
     todayDate.textContent = new Date().toLocaleDateString('de-CH', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
   }
 
-  // ============================================
-  // API – RESERVIERUNGEN LADEN
-  // ============================================
+  // ===== API =====
   async function loadReservations() {
     try {
       const res = await fetch('/api/reservations');
       if (!res.ok) throw new Error('Fehler beim Laden');
       const data = await res.json();
-
-      // Datum formatieren: YYYY-MM-DD → DD.MM.YYYY (für Anzeige)
       reservations = data.map(r => ({
         ...r,
         dateFormatted: formatDate(r.date),
         status: r.status || 'offen',
       }));
-
       populateDateFilters();
       updateAllViews();
     } catch (err) {
@@ -75,9 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ============================================
-  // API – STATUS ÄNDERN (Bestätigen / Stornieren)
-  // ============================================
   async function updateStatus(id, newStatus) {
     try {
       const res = await fetch(`/api/reservations/${id}`, {
@@ -92,9 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ============================================
-  // API – RESERVIERUNG LÖSCHEN
-  // ============================================
   async function deleteReservation(id) {
     try {
       const res = await fetch(`/api/reservations/${id}`, { method: 'DELETE' });
@@ -105,9 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ============================================
-  // API – NEUE RESERVIERUNG SPEICHERN
-  // ============================================
   async function saveReservation(data) {
     try {
       const res = await fetch('/api/reservations', {
@@ -124,12 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ============================================
-  // HILFSFUNKTIONEN
-  // ============================================
+  // ===== HILFSFUNKTIONEN =====
   function formatDate(dateStr) {
     if (!dateStr) return '–';
-    if (dateStr.includes('.')) return dateStr; // bereits DD.MM.YYYY
+    if (dateStr.includes('.')) return dateStr;
     const [y, m, d] = dateStr.split('-');
     return `${d}.${m}.${y}`;
   }
@@ -140,18 +111,18 @@ document.addEventListener('DOMContentLoaded', () => {
     return `<span class="status status--${cls}">${label}</span>`;
   }
 
-  function filterReservations(dayValue, statusValue = 'all') {
+  function filterReservations(dayValue, statusValue = 'all', searchValue = '') {
     return reservations.filter(r => {
       const dayMatch    = dayValue    === 'all' || r.dateFormatted === dayValue;
-      const statusMatch = statusValue === 'all' || r.status        === statusValue;
-      return dayMatch && statusMatch;
+      const statusMatch = statusValue === 'all' || r.status === statusValue;
+      const searchMatch = !searchValue || r.name.toLowerCase().includes(searchValue.toLowerCase())
+                        || (r.email && r.email.toLowerCase().includes(searchValue.toLowerCase()));
+      return dayMatch && statusMatch && searchMatch;
     });
   }
 
-  // Datumsfilter dynamisch aus echten Daten befüllen
   function populateDateFilters() {
     const dates = [...new Set(reservations.map(r => r.dateFormatted))].sort();
-
     [overviewDayFilter, reservationsDayFilter].forEach(sel => {
       if (!sel) return;
       while (sel.options.length > 1) sel.remove(1);
@@ -161,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sel.appendChild(opt);
       });
     });
-
     if (tablesDayFilter && dates.length) {
       tablesDayFilter.innerHTML = '';
       dates.forEach(d => {
@@ -172,9 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ============================================
-  // KPI KARTEN
-  // ============================================
+  // ===== KPI =====
   function updateKpis(dayValue) {
     const filtered = filterReservations(dayValue, 'all');
     animateCounter(kpiTotal,     filtered.length);
@@ -194,30 +162,42 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(tick);
   }
 
-  // ============================================
-  // ÜBERSICHT RENDERN
-  // ============================================
+  // ===== ÜBERSICHT =====
   function renderOverview() {
     const dayVal    = overviewDayFilter?.value    || 'all';
     const statusVal = overviewStatusFilter?.value || 'all';
-    const filtered  = filterReservations(dayVal, statusVal);
+    const search    = searchInput?.value          || '';
+    const filtered  = filterReservations(dayVal, statusVal, search);
 
     overviewTbody.innerHTML = filtered.length
       ? filtered.map(r => {
-          const isOpen = r.status === 'offen';
+          const isOpen      = r.status === 'offen';
+          const isCancelled = r.status === 'storniert';
           const actions = isOpen
-            ? `<button class="small-button confirm-btn"  data-id="${r.id}">✓ Bestätigen</button>
-               <button class="danger-button cancel-btn"  data-id="${r.id}">✕ Stornieren</button>`
-            : `<button class="danger-button delete-btn"  data-id="${r.id}">🗑 Löschen</button>`;
+            ? `<div class="action-group">
+                <button class="small-button confirm-btn" data-id="${r.id}">✓ Bestätigen</button>
+                <button class="danger-button cancel-btn" data-id="${r.id}">✕ Stornieren</button>
+               </div>`
+            : isCancelled
+            ? `<div class="action-group">
+                <button class="danger-button delete-btn" data-id="${r.id}">🗑 Löschen</button>
+               </div>`
+            : `<div class="action-group">
+                <button class="danger-button cancel-btn" data-id="${r.id}">✕ Stornieren</button>
+                <button class="danger-button delete-btn" data-id="${r.id}">🗑 Löschen</button>
+               </div>`;
 
           return `<tr>
             <td>${r.dateFormatted}</td>
-            <td>${r.time}</td>
-            <td><strong>${r.name}</strong></td>
+            <td>${r.time} Uhr</td>
+            <td>
+              <strong>${r.name}</strong><br>
+              <span style="font-size:.82rem;color:#888;">${r.email || '–'}</span>
+            </td>
+            <td>${r.phone || '–'}</td>
             <td>${r.guests} Pers.</td>
-            <td>–</td>
             <td>${statusBadge(r.status)}</td>
-            <td class="action-group">${actions}</td>
+            <td>${actions}</td>
           </tr>`;
         }).join('')
       : `<tr><td colspan="7" style="color:#9ca3af;text-align:center;padding:32px;">
@@ -227,20 +207,22 @@ document.addEventListener('DOMContentLoaded', () => {
     updateKpis(dayVal);
   }
 
-  // ============================================
-  // RESERVIERUNGEN RENDERN
-  // ============================================
+  // ===== RESERVIERUNGEN =====
   function renderReservations() {
     const dayVal   = reservationsDayFilter?.value || 'all';
-    const filtered = filterReservations(dayVal, 'all');
+    const search   = searchInput?.value           || '';
+    const filtered = filterReservations(dayVal, 'all', search);
 
     reservationsTbody.innerHTML = filtered.length
       ? filtered.map(r => `<tr>
           <td>${r.dateFormatted}</td>
-          <td>${r.time}</td>
-          <td><strong>${r.name}</strong></td>
+          <td>${r.time} Uhr</td>
+          <td>
+            <strong>${r.name}</strong><br>
+            <span style="font-size:.82rem;color:#888;">${r.email || '–'}</span>
+          </td>
+          <td>${r.phone || '–'}</td>
           <td>${r.guests} Pers.</td>
-          <td>–</td>
           <td>${statusBadge(r.status)}</td>
         </tr>`).join('')
       : `<tr><td colspan="6" style="color:#9ca3af;text-align:center;padding:32px;">
@@ -248,14 +230,11 @@ document.addEventListener('DOMContentLoaded', () => {
          </td></tr>`;
   }
 
-  // ============================================
-  // TISCH-ÜBERSICHT RENDERN
-  // ============================================
+  // ===== TISCHÜBERSICHT =====
   function renderTables() {
     const dayVal   = tablesDayFilter?.value;
     const filtered = dayVal ? filterReservations(dayVal, 'all') : reservations;
 
-    // Keine Tischnummern in DB → zeige Reservierungen als Liste
     tablesGrid.innerHTML = filtered.length
       ? filtered.map(r => {
           const cls   = statusClass[r.status] || 'open';
@@ -263,7 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
           return `<article class="table-card table-card--${cls}">
             <h3>${r.name}</h3>
             <p>${label}</p>
-            <p style="font-size:.8rem;margin-top:4px;opacity:.7;">${r.dateFormatted} · ${r.time} · ${r.guests} Pers.</p>
+            <p style="font-size:.8rem;margin-top:4px;opacity:.7;">
+              ${r.dateFormatted} · ${r.time} Uhr · ${r.guests} Pers.
+            </p>
+            ${r.phone ? `<p style="font-size:.8rem;margin-top:2px;opacity:.7;">📞 ${r.phone}</p>` : ''}
           </article>`;
         }).join('')
       : `<p style="color:#9ca3af;padding:20px;">Keine Reservierungen für dieses Datum.</p>`;
@@ -275,9 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTables();
   }
 
-  // ============================================
-  // EVENTS – AKTIONEN IN DER TABELLE
-  // ============================================
+  // ===== EVENTS – TABELLE =====
   overviewTbody?.addEventListener('click', async e => {
     const confirmBtn = e.target.closest('.confirm-btn');
     const cancelBtn  = e.target.closest('.cancel-btn');
@@ -287,27 +267,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const id   = Number(confirmBtn.dataset.id);
       const item = reservations.find(r => r.id === id);
       await updateStatus(id, 'bestätigt');
-      showToast(`${item?.name || 'Reservierung'} bestätigt.`, 'success');
+      showToast(`${item?.name || 'Reservierung'} bestätigt. ✓`, 'success');
     }
     if (cancelBtn) {
       const id   = Number(cancelBtn.dataset.id);
       const item = reservations.find(r => r.id === id);
-      await updateStatus(id, 'storniert');
-      showToast(`${item?.name || 'Reservierung'} storniert.`, 'error');
+      if (confirm(`Reservierung von ${item?.name || 'Gast'} wirklich stornieren?`)) {
+        await updateStatus(id, 'storniert');
+        showToast(`${item?.name || 'Reservierung'} storniert.`, 'error');
+      }
     }
     if (deleteBtn) {
       const id   = Number(deleteBtn.dataset.id);
       const item = reservations.find(r => r.id === id);
-      if (confirm(`Reservierung von ${item?.name || 'Gast'} wirklich löschen?`)) {
+      if (confirm(`Reservierung von ${item?.name || 'Gast'} wirklich löschen? Dies kann nicht rückgängig gemacht werden.`)) {
         await deleteReservation(id);
         showToast('Reservierung gelöscht.', 'error');
       }
     }
   });
 
-  // ============================================
-  // EVENTS – NEUE RESERVIERUNG
-  // ============================================
+  // ===== EVENTS – NEUE RESERVIERUNG =====
   newReservationForm?.addEventListener('submit', async e => {
     e.preventDefault();
     const name    = document.getElementById('name').value.trim();
@@ -326,24 +306,21 @@ document.addEventListener('DOMContentLoaded', () => {
       name,
       email,
       phone:   telefon,
-      date:    datum,       // YYYY-MM-DD – so erwartet der Server
+      date:    datum,
       time:    uhrzeit,
       guests:  parseInt(persons),
       message: document.getElementById('notiz').value.trim(),
     });
   });
 
-  // ============================================
-  // EVENTS – FILTER
-  // ============================================
+  // ===== EVENTS – FILTER & SUCHE =====
   overviewDayFilter?.addEventListener('change', renderOverview);
   overviewStatusFilter?.addEventListener('change', renderOverview);
   reservationsDayFilter?.addEventListener('change', renderReservations);
   tablesDayFilter?.addEventListener('change', renderTables);
+  searchInput?.addEventListener('input', updateAllViews);
 
-  // ============================================
-  // NAVIGATION
-  // ============================================
+  // ===== NAVIGATION =====
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       navButtons.forEach(b => { b.classList.remove('is-active'); b.removeAttribute('aria-current'); });
@@ -364,9 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nav.classList.toggle('is-open');
   });
 
-  // ============================================
-  // TOAST
-  // ============================================
+  // ===== TOAST =====
   function showToast(message, type = 'success') {
     document.querySelector('.toast')?.remove();
     const toast = document.createElement('div');
@@ -383,8 +358,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // ============================================
-  // START – echte Daten aus Datenbank laden
-  // ============================================
   loadReservations();
 });

@@ -8,6 +8,40 @@ const form = document.getElementById('reservation-form');
 const statusMsg = document.getElementById('status-msg');
 const submitBtn = document.getElementById('submit-btn');
 
+// Verfügbarkeit prüfen wenn Datum oder Uhrzeit geändert wird
+const dateInput = document.getElementById('date');
+const timeInput = document.getElementById('time');
+const availabilityMsg = document.getElementById('availability-msg');
+
+async function pruefeVerfuegbarkeit() {
+  const date = dateInput.value;
+  const time = timeInput.value;
+
+  if (!date || !time) return;
+
+  availabilityMsg.textContent = '⏳ Verfügbarkeit wird geprüft...';
+  availabilityMsg.className = 'availability checking';
+  availabilityMsg.style.display = 'block';
+
+  try {
+    const antwort = await fetch(`/api/check-availability?date=${date}&time=${time}`);
+    const ergebnis = await antwort.json();
+
+if (ergebnis.available) {
+      availabilityMsg.textContent = `✓ Noch ${ergebnis.remaining} Plätze verfügbar!`;
+      availabilityMsg.className = 'availability available';
+    } else {
+      availabilityMsg.textContent = '✗ Dieser Zeitpunkt ist leider ausgebucht. Bitte wählen Sie eine andere Zeit.';
+      availabilityMsg.className = 'availability unavailable';
+    }
+  } catch (err) {
+    availabilityMsg.style.display = 'none';
+  }
+}
+
+dateInput.addEventListener('change', pruefeVerfuegbarkeit);
+timeInput.addEventListener('change', pruefeVerfuegbarkeit);
+
 // ===== VALIDIERUNGSFUNKTIONEN =====
 
 function istGueltigeEmail(email) {

@@ -35,25 +35,50 @@
 
     <div id="status-msg"></div>
 
-    <form id="reservation-form">
+    <form id="reservation-form" novalidate>
 
       <label for="name">Name *</label>
       <input type="text" id="name" required placeholder="Max Mustermann">
 
       <label for="email">E-Mail *</label>
-      <input type="email" id="email" required placeholder="max@beispiel.ch">
+      <input type="text" id="email" placeholder="max@beispiel.ch">
 
       <label for="phone">Telefon</label>
-      <input type="tel" id="phone" placeholder="041 123 45 67">
+      <input type="text" id="phone" placeholder="041 123 45 67 oder +41791234567">
 
       <label for="date">Datum *</label>
-      <input type="date" id="date" required>
+      <input type="date" id="date">
 
-      <label for="time">Uhrzeit *</label>
-      <input type="time" id="time" required min="11:00" max="22:00">
+<label for="time">Uhrzeit *</label>
+<select id="time">
+  <option value="">-- Uhrzeit wählen --</option>
+  <option value="11:00">11:00 Uhr</option>
+  <option value="11:30">11:30 Uhr</option>
+  <option value="12:00">12:00 Uhr</option>
+  <option value="12:30">12:30 Uhr</option>
+  <option value="13:00">13:00 Uhr</option>
+  <option value="13:30">13:30 Uhr</option>
+  <option value="14:00">14:00 Uhr</option>
+  <option value="14:30">14:30 Uhr</option>
+  <option value="15:00">15:00 Uhr</option>
+  <option value="15:30">15:30 Uhr</option>
+  <option value="16:00">16:00 Uhr</option>
+  <option value="16:30">16:30 Uhr</option>
+  <option value="17:00">17:00 Uhr</option>
+  <option value="17:30">17:30 Uhr</option>
+  <option value="18:00">18:00 Uhr</option>
+  <option value="18:30">18:30 Uhr</option>
+  <option value="19:00">19:00 Uhr</option>
+  <option value="19:30">19:30 Uhr</option>
+  <option value="20:00">20:00 Uhr</option>
+  <option value="20:30">20:30 Uhr</option>
+  <option value="21:00">21:00 Uhr</option>
+  <option value="21:30">21:30 Uhr</option>
+</select>
+<div id="availability-msg"></div>
 
       <label for="guests">Anzahl Personen *</label>
-      <input type="number" id="guests" required min="1" max="20" placeholder="2">
+      <input type="number" id="guests" min="1" max="20" placeholder="2">
 
       <label for="message">Nachricht (optional)</label>
       <textarea id="message" rows="3" placeholder="Allergien, besondere Wünsche..."></textarea>
@@ -61,6 +86,10 @@
       <button type="submit" id="submit-btn">Reservation absenden</button>
 
     </form>
+    <p style="text-align:center; margin-top:1.5rem; color:#888; font-size:0.85rem;">
+  Reservation bereits gemacht? 
+  <a href="cancel.html" style="color:#c0392b; font-weight:700;">Hier stornieren</a>
+</p>
   </div>
 
   <div class="reserve-cta" style="margin-top: 3rem;">

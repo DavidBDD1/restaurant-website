@@ -122,8 +122,12 @@
 
         <section class="card">
           <div class="card__header card__header--filters">
-            <h2>Reservierungsübersicht</h2>
-            <div class="filter-row" aria-label="Filter">
+  <h2>Reservierungsübersicht</h2>
+  <div class="filter-row" aria-label="Filter">
+    <div class="filter-field">
+      <label for="search-input">Suche</label>
+      <input type="text" id="search-input" placeholder="Name oder E-Mail...">
+    </div>
               <div class="filter-field">
                 <label for="overview-day-filter">Tag</label>
                 <select id="overview-day-filter">
@@ -148,13 +152,13 @@
             <table>
               <thead>
                 <tr>
-                  <th scope="col">Datum</th>
-                  <th scope="col">Uhrzeit</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Personen</th>
-                  <th scope="col">Tisch</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Aktionen</th>
+                 <th scope="col">Datum</th>
+<th scope="col">Uhrzeit</th>
+<th scope="col">Name / E-Mail</th>
+<th scope="col">Telefon</th>
+<th scope="col">Personen</th>
+<th scope="col">Status</th>
+<th scope="col">Aktionen</th>
                 </tr>
               </thead>
               <tbody id="overview-tbody"></tbody>
@@ -188,12 +192,12 @@
             <table>
               <thead>
                 <tr>
-                  <th scope="col">Datum</th>
-                  <th scope="col">Uhrzeit</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Personen</th>
-                  <th scope="col">Tisch</th>
-                  <th scope="col">Status</th>
+                <th scope="col">Datum</th>
+<th scope="col">Uhrzeit</th>
+<th scope="col">Name / E-Mail</th>
+<th scope="col">Telefon</th>
+<th scope="col">Personen</th>
+<th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody id="reservations-tbody"></tbody>
@@ -242,11 +246,19 @@
               <div class="field">
                 <label for="uhrzeit">Uhrzeit</label>
                 <select id="uhrzeit" name="uhrzeit">
-                  <option value="">Bitte wählen</option>
-                  <option>17:00</option><option>17:30</option><option>18:00</option><option>18:30</option>
-                  <option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option>
-                  <option>21:00</option><option>21:30</option><option>22:00</option><option>22:30</option>
-                </select>
+  <option value="">Bitte wählen</option>
+  <option>11:00</option><option>11:30</option>
+  <option>12:00</option><option>12:30</option>
+  <option>13:00</option><option>13:30</option>
+  <option>14:00</option><option>14:30</option>
+  <option>15:00</option><option>15:30</option>
+  <option>16:00</option><option>16:30</option>
+  <option>17:00</option><option>17:30</option>
+  <option>18:00</option><option>18:30</option>
+  <option>19:00</option><option>19:30</option>
+  <option>20:00</option><option>20:30</option>
+  <option>21:00</option><option>21:30</option>
+</select>
               </div>
               <div class="field"><label for="personen">Personenanzahl</label><input id="personen" name="personen" type="number" min="1" max="12" placeholder="1–12"></div>
               <div class="field">

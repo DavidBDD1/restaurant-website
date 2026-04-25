@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservation stornieren – Bella Italia</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="flag-bar">
+    <div class="green"></div>
+    <div class="white"></div>
+    <div class="red"></div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="logo">Bella <span>Italia</span></a>
+    <div class="nav-links">
+      <a href="index.html">Startseite</a>
+      <a href="menu.html">Speisekarte</a>
+      <a href="reservation.html">Reservation</a>
+    </div>
+  </nav>
+
+  <div class="hero" style="padding: 3rem 2rem;">
+    <p class="eyebrow">Reservation verwalten</p>
+    <h1 style="font-size: 2rem;">Reservation <em>stornieren</em></h1>
+  </div>
+
+  <div class="form-container">
+
+    <div id="status-msg"></div>
+
+    <div id="such-form">
+      <p style="color:#666; font-weight:300; margin-bottom:2rem; line-height:1.7;">
+        Geben Sie Ihre E-Mail-Adresse und das Reservationsdatum ein – wir zeigen Ihnen Ihre Reservation an.
+      </p>
+
+      <label for="email">E-Mail-Adresse *</label>
+      <input type="text" id="email" placeholder="max@beispiel.ch">
+
+      <label for="date">Datum *</label>
+      <input type="date" id="date">
+
+      <button type="button" id="suchen-btn" onclick="sucheReservation()">
+        Reservation suchen
+      </button>
+    </div>
+
+    <div id="reservation-info" style="display:none;">
+      <div class="success-box" style="border-top-color: #1a1a1a;">
+        <h2>Ihre Reservation</h2>
+        <div class="success-details" id="reservation-details"></div>
+        <p class="success-note" style="margin-top:1rem;">Möchten Sie diese Reservation stornieren?</p>
+        <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem; flex-wrap:wrap;">
+          <button type="button" id="stornieren-btn" class="btn" style="background:#c0392b;">
+            Reservation stornieren
+          </button>
+          <a href="reservation.html" class="btn-outline">Neue Reservation</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo">Bella <span>Italia</span></div>
+    <div class="footer-flag">
+      <div class="green"></div>
+      <div class="white"></div>
+      <div class="red"></div>
+    </div>
+    <div>© 2025 Bella Italia · Luzern</div>
+  </footer>
+
+  <script src="cancel.js"></script>
+</body>
+</html>

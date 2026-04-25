@@ -1057,3 +1057,30 @@ button[type="submit"]:hover { background: #a93226; }
 a.logo {
   text-decoration: none;
 }
+/* ===== VERFÜGBARKEIT ===== */
+.availability {
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  font-weight: 700;
+  display: none;
+}
+
+.availability.checking {
+  color: #888;
+  display: block;
+}
+
+.availability.available {
+  color: #1e8449;
+  background: #eafaf1;
+  border-left: 3px solid #1e8449;
+  display: block;
+}
+
+.availability.unavailable {
+  color: #a93226;
+  background: #fdf2f2;
+  border-left: 3px solid #a93226;
+  display: block;
+}
