@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login – Bella Italia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:        #c0392b;
+      --red-dark:   #a93226;
+      --dark:       #1a1a1a;
+      --darker:     #111111;
+      --white:      #ffffff;
+      --muted:      rgba(255,255,255,0.45);
+      --border:     rgba(255,255,255,0.1);
+      --input-bg:   rgba(255,255,255,0.06);
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--darker);
+      color: var(--white);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* ── LINKE SEITE – Bild / Branding ── */
+    .left {
+      background: var(--dark);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px;
+      overflow: hidden;
+    }
+
+    /* Roter Akzentstreifen oben (wie im Frontend) */
+    .left::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--red);
+    }
+
+    /* Dekoratives Muster im Hintergrund */
+    .left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(192,57,43,0.08) 0%, transparent 60%),
+        radial-gradient(circle at 80% 20%, rgba(192,57,43,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .left__brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .left__logo {
+      width: 44px; height: 44px;
+    }
+    .left__logo svg { width: 44px; height: 44px; }
+
+    .left__brand-name {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+    }
+    .left__brand-name em { font-style: italic; color: var(--red); }
+
+    .left__content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .left__eyebrow {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+
+    .left__headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .left__headline em {
+      display: block;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--red);
+    }
+
+    .left__desc {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 340px;
+    }
+
+    /* Trennlinie mit Flagge */
+    .left__footer {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .flag {
+      display: flex;
+      gap: 3px;
+    }
+    .flag span {
+      display: block;
+      width: 18px; height: 12px;
+      border-radius: 2px;
+    }
+    .flag .green  { background: #009246; }
+    .flag .white  { background: #fff; }
+    .flag .red    { background: #ce2b37; }
+    .left__footer-text {
+      font-size: .8rem;
+      color: var(--muted);
+      letter-spacing: .05em;
+    }
+
+    /* ── RECHTE SEITE – Login Form ── */
+    .right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      background: #0f0f0f;
+      position: relative;
+    }
+
+    .right::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red) 0%, transparent 100%);
+      opacity: .4;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      animation: fadeUp .5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-box__title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .login-box__sub {
+      font-size: .9rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    /* Felder */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .field label {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .field input {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px 18px;
+      font: inherit;
+      font-size: .95rem;
+      color: var(--white);
+      transition: border-color .2s, background .2s;
+      outline: none;
+    }
+    .field input::placeholder { color: rgba(255,255,255,0.2); }
+    .field input:focus {
+      border-color: var(--red);
+      background: rgba(192,57,43,0.06);
+    }
+
+    /* Fehlermeldung */
+    .error-msg {
+      display: none;
+      background: rgba(192,57,43,0.15);
+      border: 1px solid rgba(192,57,43,0.4);
+      border-left: 3px solid var(--red);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: .875rem;
+      color: #f87171;
+      margin-bottom: 20px;
+    }
+    .error-msg.is-visible { display: block; }
+
+    /* Submit Button */
+    .login-btn {
+      width: 100%;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      padding: 16px;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .2s, transform .1s;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-btn:hover  { background: var(--red-dark); }
+    .login-btn:active { transform: scale(.98); }
+    .login-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    /* Spinner im Button */
+    .login-btn__spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .login-btn.is-loading .login-btn__text    { display: none; }
+    .login-btn.is-loading .login-btn__spinner { display: block; }
+
+    /* Trennlinie */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 24px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span {
+      font-size: .75rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* Zurück-Link */
+    .back-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .875rem;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--white); }
+    .back-link svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* Focus */
+    *:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .left { display: none; }
+      .right { padding: 40px 24px; min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LINKE SEITE -->
+  <div class="left">
+    <div class="left__brand">
+      <div class="left__logo">
+        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="22" r="21" stroke="#c0392b" stroke-width="1.5"/>
+          <path d="M13 29c2-5 5-9 9-11 4 2 7 6 9 11" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="22" cy="15" r="3" fill="#c0392b"/>
+        </svg>
+      </div>
+      <span class="left__brand-name">Bella <em>Italia</em></span>
+    </div>
+
+    <div class="left__content">
+      <p class="left__eyebrow">Adminbereich</p>
+      <h1 class="left__headline">
+        Willkommen<br>
+        <em>zurück.</em>
+      </h1>
+      <p class="left__desc">
+        Verwalte Reservierungen, überwache Tischauslastung und behalte den Überblick über dein Restaurant.
+      </p>
+    </div>
+
+    <div class="left__footer">
+      <div class="flag">
+        <span class="green"></span>
+        <span class="white"></span>
+        <span class="red"></span>
+      </div>
+      <span class="left__footer-text">Ristorante & Pizzeria · Luzern · seit 1987</span>
+    </div>
+  </div>
+
+  <!-- RECHTE SEITE -->
+  <div class="right">
+    <div class="login-box">
+      <h2 class="login-box__title">Anmelden</h2>
+      <p class="login-box__sub">Bitte melde dich mit deinen Admin-Zugangsdaten an.</p>
+
+      <div class="error-msg" id="error-msg" role="alert">
+        ✕ Falscher Benutzername oder Passwort.
+      </div>
+
+      <div class="field">
+        <label for="username">Benutzername</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="admin"
+          autocomplete="username"
+          autofocus
+        >
+      </div>
+
+      <div class="field">
+        <label for="password">Passwort</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        >
+      </div>
+
+      <button class="login-btn" id="login-btn" type="button">
+        <span class="login-btn__text">Einloggen</span>
+        <span class="login-btn__spinner" aria-hidden="true"></span>
+      </button>
+
+      <div class="divider"><span>oder</span></div>
+
+      <a href="index.html" class="back-link">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Zurück zur Website
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginBtn      = document.getElementById('login-btn');
+    const errorMsg      = document.getElementById('error-msg');
+
+    // Enter-Taste funktioniert in beiden Feldern
+    [usernameInput, passwordInput].forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') doLogin();
+      });
+    });
+
+    loginBtn.addEventListener('click', doLogin);
+
+    async function doLogin() {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!username || !password) {
+        showError();
+        return;
+      }
+
+      // Lade-Animation starten
+      loginBtn.classList.add('is-loading');
+      loginBtn.disabled = true;
+      errorMsg.classList.remove('is-visible');
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          // Erfolgreich → zum Admin weiterleiten
+          window.location.href = '/admin.html';
+        } else {
+          showError();
+        }
+      } catch (err) {
+        // Falls API-Route noch nicht existiert: Fallback (nur für Entwicklung)
+        if (username === 'admin' && password === 'admin123') {
+          window.location.href = '/admin.html';
+        } else {
+          showError();
+        }
+      } finally {
+        loginBtn.classList.remove('is-loading');
+        loginBtn.disabled = false;
+      }
+    }
+
+    function showError() {
+      errorMsg.classList.add('is-visible');
+      passwordInput.value = '';
+      passwordInput.focus();
+      // Schüttel-Animation
+      loginBtn.style.animation = 'none';
+      loginBtn.offsetHeight; // reflow
+      loginBtn.style.animation = 'shake .3s ease';
+    }
+
+    // Shake keyframes dynamisch hinzufügen
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%,100% { transform: translateX(0); }
+        20%,60%  { transform: translateX(-6px); }
+        40%,80%  { transform: translateX(6px); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
