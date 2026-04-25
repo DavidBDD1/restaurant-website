@@ -18,12 +18,15 @@ const db = new sqlite3.Database("./restaurant.db", (err) => {
 
 db.run(`
 CREATE TABLE IF NOT EXISTS reservations (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- name TEXT,
- email TEXT,
- date TEXT,
- guests INTEGER,
- status TEXT DEFAULT 'offen'
+  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  name    TEXT,
+  email   TEXT,
+  phone   TEXT,
+  date    TEXT,
+  time    TEXT,
+  guests  INTEGER,
+  message TEXT,
+  status  TEXT DEFAULT 'offen'
 )
 `);
 
@@ -32,11 +35,11 @@ app.get("/api/test", (req,res)=>{
 });
 
 app.post("/api/reservations", (req, res) => {
-  const { name, email, date, guests } = req.body;
+const { name, email, phone, date, time, guests, message } = req.body;
 
-  db.run(
-    "INSERT INTO reservations (name, email, date, guests) VALUES (?, ?, ?, ?)",
-    [name, email, date, guests],
+db.run(
+  "INSERT INTO reservations (name, email, phone, date, time, guests, message) VALUES (?, ?, ?, ?, ?, ?, ?)",
+  [name, email, phone, date, time, guests, message],
     function (err) {
       if (err) {
         res.status(500).json({ error: err.message });
