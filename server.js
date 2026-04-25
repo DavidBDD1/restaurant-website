@@ -35,20 +35,32 @@ app.get("/api/test", (req,res)=>{
 });
 
 app.post("/api/reservations", (req, res) => {
-const { name, email, phone, date, time, guests, message } = req.body;
+  const { name, email, phone, date, time, guests, message } = req.body;
 
-db.run(
-  "INSERT INTO reservations (name, email, phone, date, time, guests, message) VALUES (?, ?, ?, ?, ?, ?, ?)",
-  [name, email, phone, date, time, guests, message],
-    function (err) {
+  // Prüfen ob bereits eine Reservation für Datum+Uhrzeit existiert
+  db.get(
+    "SELECT id FROM reservations WHERE date = ? AND time = ? AND status != 'storniert'",
+    [date, time],
+    function (err, row) {
       if (err) {
-        res.status(500).json({ error: err.message });
-      } else {
-        res.json({
-          message: "Reservierung gespeichert",
-          id: this.lastID
-        });
+        return res.status(500).json({ error: err.message });
       }
+      if (row) {
+        return res.status(409).json({ error: 'Bereits reserviert' });
+      }
+
+      // Reservation speichern
+      db.run(
+        "INSERT INTO reservations (name, email, phone, date, time, guests, message) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [name, email, phone, date, time, guests, message],
+        function (err) {
+          if (err) {
+            res.status(500).json({ error: err.message });
+          } else {
+            res.json({ message: "Reservierung gespeichert", id: this.lastID });
+          }
+        }
+      );
     }
   );
 });

@@ -1,4 +1,4 @@
-// Heutiges Datum als Minimum setzen
+// Datum minimum heute
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('date').setAttribute('min', today);
 document.getElementById('time').setAttribute('min', '11:00');
@@ -8,33 +8,99 @@ const form = document.getElementById('reservation-form');
 const statusMsg = document.getElementById('status-msg');
 const submitBtn = document.getElementById('submit-btn');
 
+// ===== VALIDIERUNGSFUNKTIONEN =====
+
+function istGueltigeEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function istGueltigeTelefon(phone) {
+  if (!phone) return true; // Telefon ist optional
+  const cleaned = phone.replace(/\s/g, '');
+  return /^[+0][0-9]{9,14}$/.test(cleaned);
+}
+
+function istGueltigeUhrzeit(time) {
+  const [hours, minutes] = time.split(':').map(Number);
+  if (hours < 11) return false;
+  if (hours > 21) return false;
+  if (hours === 21 && minutes > 30) return false;
+  return true;
+}
+
+function istGueltigesDatum(date) {
+  const gewählt = new Date(date);
+  const heute = new Date();
+  heute.setHours(0, 0, 0, 0);
+  return gewählt >= heute;
+}
+
+function zeigeFormularFehler(nachricht) {
+  statusMsg.textContent = '✗ ' + nachricht;
+  statusMsg.className = 'error';
+  statusMsg.style.display = 'block';
+  window.scrollTo(0, statusMsg.offsetTop - 20);
+}
+
+// ===== FORMULAR ABSENDEN =====
 form.addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  // Uhrzeit prüfen
-  const time = document.getElementById('time').value;
-  const [hours] = time.split(':').map(Number);
-  if (hours < 11 || hours >= 22) {
-    statusMsg.textContent = '✗ Bitte wählen Sie eine Uhrzeit zwischen 11:00 und 22:00 Uhr.';
-    statusMsg.className = 'error';
-    statusMsg.style.display = 'block';
-    return;
-  }
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Wird gesendet...';
-  statusMsg.className = '';
-  statusMsg.style.display = 'none';
-
   const daten = {
-    name:    document.getElementById('name').value,
-    email:   document.getElementById('email').value,
-    phone:   document.getElementById('phone').value,
+    name:    document.getElementById('name').value.trim(),
+    email:   document.getElementById('email').value.trim(),
+    phone:   document.getElementById('phone').value.trim(),
     date:    document.getElementById('date').value,
     time:    document.getElementById('time').value,
     guests:  document.getElementById('guests').value,
-    message: document.getElementById('message').value
+    message: document.getElementById('message').value.trim()
   };
+
+  // ===== VALIDIERUNG =====
+  if (!daten.name || daten.name.length < 2) {
+    zeigeFormularFehler('Bitte geben Sie einen gültigen Namen ein (mindestens 2 Zeichen).');
+    return;
+  }
+
+  if (!istGueltigeEmail(daten.email)) {
+    zeigeFormularFehler('Bitte geben Sie eine gültige E-Mail-Adresse ein (z.B. name@beispiel.ch).');
+    return;
+  }
+
+  if (!istGueltigeTelefon(daten.phone)) {
+    zeigeFormularFehler('Bitte geben Sie eine gültige Telefonnummer ein (z.B. 041 123 45 67 oder +41791234567).');
+    return;
+  }
+
+  if (!daten.date) {
+    zeigeFormularFehler('Bitte wählen Sie ein Datum aus.');
+    return;
+  }
+
+  if (!istGueltigesDatum(daten.date)) {
+    zeigeFormularFehler('Das gewählte Datum liegt in der Vergangenheit. Bitte wählen Sie ein zukünftiges Datum.');
+    return;
+  }
+
+  if (!daten.time) {
+    zeigeFormularFehler('Bitte wählen Sie eine Uhrzeit aus.');
+    return;
+  }
+
+  if (!istGueltigeUhrzeit(daten.time)) {
+    zeigeFormularFehler('Unsere Öffnungszeiten sind 11:00 – 21:30 Uhr. Bitte wählen Sie eine Uhrzeit innerhalb dieser Zeiten.');
+    return;
+  }
+
+  if (!daten.guests || daten.guests < 1 || daten.guests > 20) {
+    zeigeFormularFehler('Bitte geben Sie eine gültige Personenanzahl ein (1 – 20 Personen).');
+    return;
+  }
+
+  // ===== ABSENDEN =====
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Wird gesendet...';
+  statusMsg.style.display = 'none';
 
   try {
     const antwort = await fetch('/api/reservations', {
@@ -48,8 +114,6 @@ form.addEventListener('submit', async function (e) {
     if (antwort.ok) {
       form.style.display = 'none';
       statusMsg.innerHTML = `
-
-        <!-- Bestätigung -->
         <div class="success-box">
           <div class="success-icon">✓</div>
           <h2>Vielen Dank, ${daten.name}!</h2>
@@ -76,85 +140,46 @@ form.addEventListener('submit', async function (e) {
           <a href="index.html" class="btn" style="margin-top:1.5rem; display:inline-block;">Zurück zur Startseite</a>
         </div>
 
-        <!-- E-Mail Simulation -->
         <div class="email-preview">
           <div class="email-header">
             <span class="email-label">📧 Simulierte Bestätigungs-E-Mail</span>
           </div>
           <div class="email-body">
             <div class="email-meta">
-              <div class="email-meta-row">
-                <span class="email-meta-label">Von:</span>
-                <span>info@bellaitalia.ch</span>
-              </div>
-              <div class="email-meta-row">
-                <span class="email-meta-label">An:</span>
-                <span>${daten.email}</span>
-              </div>
-              <div class="email-meta-row">
-                <span class="email-meta-label">Betreff:</span>
-                <span>Reservationsbestätigung – Bella Italia</span>
-              </div>
+              <div class="email-meta-row"><span class="email-meta-label">Von:</span><span>info@bellaitalia.ch</span></div>
+              <div class="email-meta-row"><span class="email-meta-label">An:</span><span>${daten.email}</span></div>
+              <div class="email-meta-row"><span class="email-meta-label">Betreff:</span><span>Reservationsbestätigung – Bella Italia</span></div>
             </div>
-
             <div class="email-content">
               <div class="email-logo">Bella <span>Italia</span></div>
-              <div class="email-flag">
-                <div class="eg"></div><div class="ew"></div><div class="er"></div>
-              </div>
-
+              <div class="email-flag"><div class="eg"></div><div class="ew"></div><div class="er"></div></div>
               <p class="email-greeting">Guten Tag, ${daten.name}</p>
               <p class="email-text">Vielen Dank für Ihre Reservation. Wir freuen uns, Sie bei uns begrüssen zu dürfen!</p>
-
               <div class="email-details">
-                <div class="email-detail-row">
-                  <span>📅 Datum</span>
-                  <strong>${formatDate(daten.date)}</strong>
-                </div>
-                <div class="email-detail-row">
-                  <span>🕐 Uhrzeit</span>
-                  <strong>${daten.time} Uhr</strong>
-                </div>
-                <div class="email-detail-row">
-                  <span>👥 Personen</span>
-                  <strong>${daten.guests}</strong>
-                </div>
-                ${daten.phone ? `
-                <div class="email-detail-row">
-                  <span>📞 Telefon</span>
-                  <strong>${daten.phone}</strong>
-                </div>` : ''}
-                ${daten.message ? `
-                <div class="email-detail-row">
-                  <span>💬 Nachricht</span>
-                  <strong>${daten.message}</strong>
-                </div>` : ''}
+                <div class="email-detail-row"><span>📅 Datum</span><strong>${formatDate(daten.date)}</strong></div>
+                <div class="email-detail-row"><span>🕐 Uhrzeit</span><strong>${daten.time} Uhr</strong></div>
+                <div class="email-detail-row"><span>👥 Personen</span><strong>${daten.guests}</strong></div>
+                ${daten.phone ? `<div class="email-detail-row"><span>📞 Telefon</span><strong>${daten.phone}</strong></div>` : ''}
+                ${daten.message ? `<div class="email-detail-row"><span>💬 Nachricht</span><strong>${daten.message}</strong></div>` : ''}
               </div>
-
               <p class="email-text">Bei Fragen erreichen Sie uns unter <strong>041 123 45 67</strong> oder <strong>info@bellaitalia.ch</strong>.</p>
-              <p class="email-text">Wir freuen uns auf Ihren Besuch!</p>
               <p class="email-sign">Herzliche Grüsse<br><strong>Das Team von Bella Italia</strong></p>
-
-              <div class="email-footer-bar">
-                <p>Bella Italia · Musterstrasse 12 · 6000 Luzern</p>
-              </div>
+              <div class="email-footer-bar"><p>Bella Italia · Musterstrasse 12 · 6000 Luzern</p></div>
             </div>
           </div>
         </div>
       `;
       statusMsg.style.display = 'block';
-      statusMsg.className = '';
       window.scrollTo(0, 0);
+
+    } else if (antwort.status === 409) {
+      zeigeFormularFehler('Für dieses Datum und diese Uhrzeit ist bereits eine Reservation vorhanden. Bitte wählen Sie eine andere Zeit.');
     } else {
-      statusMsg.textContent = '✗ Fehler: ' + (ergebnis.error || 'Unbekannter Fehler.');
-      statusMsg.className = 'error';
-      statusMsg.style.display = 'block';
+      zeigeFormularFehler('Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.');
     }
 
   } catch (fehler) {
-    statusMsg.textContent = '✗ Verbindung zum Server fehlgeschlagen. Ist der Server gestartet?';
-    statusMsg.className = 'error';
-    statusMsg.style.display = 'block';
+    zeigeFormularFehler('Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.');
   }
 
   submitBtn.disabled = false;

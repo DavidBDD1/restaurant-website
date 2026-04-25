@@ -1053,3 +1053,7 @@ button[type="submit"]:hover { background: #a93226; }
   color: #aaa;
   letter-spacing: 0.5px;
 }
+
+a.logo {
+  text-decoration: none;
+}
