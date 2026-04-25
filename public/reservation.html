@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservation – Bella Italia</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="flag-bar">
+    <div class="green"></div>
+    <div class="white"></div>
+    <div class="red"></div>
+  </div>
+
+  <nav>
+    <div class="logo">Bella <span>Italia</span></div>
+    <div class="nav-links">
+      <a href="index.html">Startseite</a>
+      <a href="menu.html">Speisekarte</a>
+      <a href="reservation.html">Reservation</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero" style="padding: 3rem 2rem;">
+    <p class="eyebrow">Tisch reservieren</p>
+    <h1 style="font-size: 2.2rem;">Ihre <em>Reservation</em></h1>
+  </div>
+
+  <!-- Formular -->
+  <div class="form-container">
+
+    <div id="status-msg"></div>
+
+    <form id="reservation-form">
+
+      <label for="name">Name *</label>
+      <input type="text" id="name" required placeholder="Max Mustermann">
+
+      <label for="email">E-Mail *</label>
+      <input type="email" id="email" required placeholder="max@beispiel.ch">
+
+      <label for="phone">Telefon</label>
+      <input type="tel" id="phone" placeholder="041 123 45 67">
+
+      <label for="date">Datum *</label>
+      <input type="date" id="date" required>
+
+      <label for="time">Uhrzeit *</label>
+      <input type="time" id="time" required min="11:00" max="22:00">
+
+      <label for="guests">Anzahl Personen *</label>
+      <input type="number" id="guests" required min="1" max="20" placeholder="2">
+
+      <label for="message">Nachricht (optional)</label>
+      <textarea id="message" rows="3" placeholder="Allergien, besondere Wünsche..."></textarea>
+
+      <button type="submit" id="submit-btn">Reservation absenden</button>
+
+    </form>
+  </div>
+
+  <div class="reserve-cta" style="margin-top: 3rem;">
+    <h2>Fragen?</h2>
+    <p>Rufen Sie uns an – wir helfen Ihnen gerne weiter.</p>
+    <a href="tel:0411234567" class="btn-outline">041 123 45 67</a>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Bella <span>Italia</span></div>
+    <div class="footer-flag">
+      <div class="green"></div>
+      <div class="white"></div>
+      <div class="red"></div>
+    </div>
+    <div>© 2025 Bella Italia · Luzern</div>
+  </footer>
+
+  <script src="reservation.js"></script>
+</body>
+</html>
