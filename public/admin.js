@@ -1,36 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ============================================
-  // MOCK-DATEN (später durch API-Aufrufe ersetzen)
+  // DATEN – kommen jetzt aus der echten Datenbank
   // ============================================
-  const reservations = [
-    { id: 1,  date: '09.03.2026', time: '18:00', name: 'Müller',   persons: 2, table: 5,  status: 'open' },
-    { id: 2,  date: '09.03.2026', time: '18:30', name: 'Rossi',    persons: 4, table: 12, status: 'confirmed' },
-    { id: 3,  date: '09.03.2026', time: '19:00', name: 'Weber',    persons: 2, table: 3,  status: 'open' },
-    { id: 4,  date: '09.03.2026', time: '19:30', name: 'Schmidt',  persons: 6, table: 8,  status: 'confirmed' },
-    { id: 5,  date: '09.03.2026', time: '20:00', name: 'Ferrari',  persons: 3, table: 2,  status: 'open' },
-    { id: 6,  date: '10.03.2026', time: '18:00', name: 'Bianchi',  persons: 2, table: 1,  status: 'open' },
-    { id: 7,  date: '10.03.2026', time: '18:30', name: 'Keller',   persons: 5, table: 6,  status: 'confirmed' },
-    { id: 8,  date: '10.03.2026', time: '19:00', name: 'Romano',   persons: 2, table: 10, status: 'cancelled' },
-    { id: 9,  date: '10.03.2026', time: '20:30', name: 'Huber',    persons: 4, table: 9,  status: 'open' },
-    { id: 10, date: '11.03.2026', time: '17:30', name: 'Moretti',  persons: 2, table: 4,  status: 'confirmed' },
-    { id: 11, date: '11.03.2026', time: '19:00', name: 'Greco',    persons: 3, table: 7,  status: 'open' },
-    { id: 12, date: '11.03.2026', time: '20:00', name: 'Luca',     persons: 6, table: 11, status: 'cancelled' },
-  ];
+  let reservations = [];
 
+  // Status: server speichert 'offen'/'bestätigt'/'storniert' (Deutsch)
   const statusLabels = {
-    open:      'Offen',
-    confirmed: 'Bestätigt',
-    cancelled: 'Storniert',
+    'offen':      'Offen',
+    'bestätigt':  'Bestätigt',
+    'storniert':  'Storniert',
+  };
+
+  const statusClass = {
+    'offen':     'open',
+    'bestätigt': 'confirmed',
+    'storniert': 'cancelled',
   };
 
   // ============================================
   // ELEMENTE
   // ============================================
-  const navButtons          = document.querySelectorAll('.nav__link');
-  const panels              = document.querySelectorAll('.panel');
-  const nav                 = document.getElementById('primary-nav');
-  const mobileToggle        = document.querySelector('.mobile-nav-toggle');
+  const navButtons           = document.querySelectorAll('.nav__link');
+  const panels               = document.querySelectorAll('.panel');
+  const nav                  = document.getElementById('primary-nav');
+  const mobileToggle         = document.querySelector('.mobile-nav-toggle');
 
   const overviewDayFilter    = document.getElementById('overview-day-filter');
   const overviewStatusFilter = document.getElementById('overview-status-filter');
@@ -49,28 +43,133 @@ document.addEventListener('DOMContentLoaded', () => {
   const newReservationForm   = document.getElementById('new-reservation-form');
 
   // ============================================
-  // HEUTIGES DATUM ANZEIGEN
+  // HEUTIGES DATUM
   // ============================================
   if (todayDate) {
-    const now = new Date();
-    todayDate.textContent = now.toLocaleDateString('de-CH', {
+    todayDate.textContent = new Date().toLocaleDateString('de-CH', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
   }
 
   // ============================================
+  // API – RESERVIERUNGEN LADEN
+  // ============================================
+  async function loadReservations() {
+    try {
+      const res = await fetch('/api/reservations');
+      if (!res.ok) throw new Error('Fehler beim Laden');
+      const data = await res.json();
+
+      // Datum formatieren: YYYY-MM-DD → DD.MM.YYYY (für Anzeige)
+      reservations = data.map(r => ({
+        ...r,
+        dateFormatted: formatDate(r.date),
+        status: r.status || 'offen',
+      }));
+
+      populateDateFilters();
+      updateAllViews();
+    } catch (err) {
+      console.error('Laden fehlgeschlagen:', err);
+      showToast('Daten konnten nicht geladen werden.', 'error');
+    }
+  }
+
+  // ============================================
+  // API – STATUS ÄNDERN (Bestätigen / Stornieren)
+  // ============================================
+  async function updateStatus(id, newStatus) {
+    try {
+      const res = await fetch(`/api/reservations/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!res.ok) throw new Error('Update fehlgeschlagen');
+      await loadReservations();
+    } catch (err) {
+      showToast('Status konnte nicht geändert werden.', 'error');
+    }
+  }
+
+  // ============================================
+  // API – RESERVIERUNG LÖSCHEN
+  // ============================================
+  async function deleteReservation(id) {
+    try {
+      const res = await fetch(`/api/reservations/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Löschen fehlgeschlagen');
+      await loadReservations();
+    } catch (err) {
+      showToast('Reservierung konnte nicht gelöscht werden.', 'error');
+    }
+  }
+
+  // ============================================
+  // API – NEUE RESERVIERUNG SPEICHERN
+  // ============================================
+  async function saveReservation(data) {
+    try {
+      const res = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error('Speichern fehlgeschlagen');
+      await loadReservations();
+      showToast(`Reservierung für ${data.name} wurde gespeichert.`, 'success');
+      newReservationForm.reset();
+    } catch (err) {
+      showToast('Reservierung konnte nicht gespeichert werden.', 'error');
+    }
+  }
+
+  // ============================================
   // HILFSFUNKTIONEN
   // ============================================
+  function formatDate(dateStr) {
+    if (!dateStr) return '–';
+    if (dateStr.includes('.')) return dateStr; // bereits DD.MM.YYYY
+    const [y, m, d] = dateStr.split('-');
+    return `${d}.${m}.${y}`;
+  }
+
   function statusBadge(status) {
-    return `<span class="status status--${status}">${statusLabels[status] || status}</span>`;
+    const cls   = statusClass[status]  || 'open';
+    const label = statusLabels[status] || status;
+    return `<span class="status status--${cls}">${label}</span>`;
   }
 
   function filterReservations(dayValue, statusValue = 'all') {
-    return reservations.filter(item => {
-      const dayMatch    = dayValue    === 'all' || item.date   === dayValue;
-      const statusMatch = statusValue === 'all' || item.status === statusValue;
+    return reservations.filter(r => {
+      const dayMatch    = dayValue    === 'all' || r.dateFormatted === dayValue;
+      const statusMatch = statusValue === 'all' || r.status        === statusValue;
       return dayMatch && statusMatch;
     });
+  }
+
+  // Datumsfilter dynamisch aus echten Daten befüllen
+  function populateDateFilters() {
+    const dates = [...new Set(reservations.map(r => r.dateFormatted))].sort();
+
+    [overviewDayFilter, reservationsDayFilter].forEach(sel => {
+      if (!sel) return;
+      while (sel.options.length > 1) sel.remove(1);
+      dates.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d; opt.textContent = d;
+        sel.appendChild(opt);
+      });
+    });
+
+    if (tablesDayFilter && dates.length) {
+      tablesDayFilter.innerHTML = '';
+      dates.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d; opt.textContent = d;
+        tablesDayFilter.appendChild(opt);
+      });
+    }
   }
 
   // ============================================
@@ -79,71 +178,70 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateKpis(dayValue) {
     const filtered = filterReservations(dayValue, 'all');
     animateCounter(kpiTotal,     filtered.length);
-    animateCounter(kpiOpen,      filtered.filter(r => r.status === 'open').length);
-    animateCounter(kpiConfirmed, filtered.filter(r => r.status === 'confirmed').length);
+    animateCounter(kpiOpen,      filtered.filter(r => r.status === 'offen').length);
+    animateCounter(kpiConfirmed, filtered.filter(r => r.status === 'bestätigt').length);
   }
 
-  function animateCounter(el, targetValue) {
+  function animateCounter(el, target) {
     if (!el) return;
-    const start    = parseInt(el.textContent) || 0;
-    const duration = 400;
-    const startTime = performance.now();
-    function update(currentTime) {
-      const elapsed  = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      el.textContent = Math.round(start + (targetValue - start) * progress);
-      if (progress < 1) requestAnimationFrame(update);
+    const start = parseInt(el.textContent) || 0;
+    const t0 = performance.now();
+    function tick(now) {
+      const p = Math.min((now - t0) / 400, 1);
+      el.textContent = Math.round(start + (target - start) * p);
+      if (p < 1) requestAnimationFrame(tick);
     }
-    requestAnimationFrame(update);
+    requestAnimationFrame(tick);
   }
 
   // ============================================
   // ÜBERSICHT RENDERN
   // ============================================
   function renderOverview() {
-    const dayValue    = overviewDayFilter.value;
-    const statusValue = overviewStatusFilter.value;
-    const filtered    = filterReservations(dayValue, statusValue);
+    const dayVal    = overviewDayFilter?.value    || 'all';
+    const statusVal = overviewStatusFilter?.value || 'all';
+    const filtered  = filterReservations(dayVal, statusVal);
 
     overviewTbody.innerHTML = filtered.length
-      ? filtered.map(item => {
-          const isOpen = item.status === 'open';
+      ? filtered.map(r => {
+          const isOpen = r.status === 'offen';
           const actions = isOpen
-            ? `<button class="small-button confirm-btn" type="button" data-id="${item.id}">✓ Bestätigen</button>
-               <button class="danger-button cancel-btn"  type="button" data-id="${item.id}">✕ Stornieren</button>`
-            : `<button class="ghost-button" type="button" disabled style="opacity:.5;cursor:default;">–</button>`;
+            ? `<button class="small-button confirm-btn"  data-id="${r.id}">✓ Bestätigen</button>
+               <button class="danger-button cancel-btn"  data-id="${r.id}">✕ Stornieren</button>`
+            : `<button class="danger-button delete-btn"  data-id="${r.id}">🗑 Löschen</button>`;
+
           return `<tr>
-            <td>${item.date}</td>
-            <td>${item.time}</td>
-            <td><strong>${item.name}</strong></td>
-            <td>${item.persons} Pers.</td>
-            <td>Tisch ${item.table}</td>
-            <td>${statusBadge(item.status)}</td>
+            <td>${r.dateFormatted}</td>
+            <td>${r.time}</td>
+            <td><strong>${r.name}</strong></td>
+            <td>${r.guests} Pers.</td>
+            <td>–</td>
+            <td>${statusBadge(r.status)}</td>
             <td class="action-group">${actions}</td>
           </tr>`;
         }).join('')
       : `<tr><td colspan="7" style="color:#9ca3af;text-align:center;padding:32px;">
-           Keine Reservierungen für die gewählten Filter.
+           Keine Reservierungen gefunden.
          </td></tr>`;
 
-    updateKpis(dayValue);
+    updateKpis(dayVal);
   }
 
   // ============================================
   // RESERVIERUNGEN RENDERN
   // ============================================
   function renderReservations() {
-    const dayValue = reservationsDayFilter.value;
-    const filtered = filterReservations(dayValue, 'all');
+    const dayVal   = reservationsDayFilter?.value || 'all';
+    const filtered = filterReservations(dayVal, 'all');
 
     reservationsTbody.innerHTML = filtered.length
-      ? filtered.map(item => `<tr>
-          <td>${item.date}</td>
-          <td>${item.time}</td>
-          <td><strong>${item.name}</strong></td>
-          <td>${item.persons} Pers.</td>
-          <td>Tisch ${item.table}</td>
-          <td>${statusBadge(item.status)}</td>
+      ? filtered.map(r => `<tr>
+          <td>${r.dateFormatted}</td>
+          <td>${r.time}</td>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.guests} Pers.</td>
+          <td>–</td>
+          <td>${statusBadge(r.status)}</td>
         </tr>`).join('')
       : `<tr><td colspan="6" style="color:#9ca3af;text-align:center;padding:32px;">
            Keine Reservierungen für dieses Datum.
@@ -154,32 +252,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // TISCH-ÜBERSICHT RENDERN
   // ============================================
   function renderTables() {
-    const dayValue = tablesDayFilter.value;
-    const filtered = filterReservations(dayValue, 'all');
-    const tableMap = new Map(filtered.map(item => [item.table, item]));
+    const dayVal   = tablesDayFilter?.value;
+    const filtered = dayVal ? filterReservations(dayVal, 'all') : reservations;
 
-    tablesGrid.innerHTML = Array.from({ length: 12 }, (_, i) => i + 1).map(num => {
-      const res = tableMap.get(num);
-      let cardClass = 'table-card--free';
-      let statusText = '✓ Frei';
-      let detail = '';
-
-      if (res) {
-        cardClass = `table-card--${res.status}`;
-        statusText = statusLabels[res.status];
-        detail = `<br><small style="font-size:.8rem;">${res.time} · ${res.name} · ${res.persons} Pers.</small>`;
-      }
-
-      return `<article class="table-card ${cardClass}">
-        <h3>Tisch ${num}</h3>
-        <p>${statusText}${detail}</p>
-      </article>`;
-    }).join('');
+    // Keine Tischnummern in DB → zeige Reservierungen als Liste
+    tablesGrid.innerHTML = filtered.length
+      ? filtered.map(r => {
+          const cls   = statusClass[r.status] || 'open';
+          const label = statusLabels[r.status] || r.status;
+          return `<article class="table-card table-card--${cls}">
+            <h3>${r.name}</h3>
+            <p>${label}</p>
+            <p style="font-size:.8rem;margin-top:4px;opacity:.7;">${r.dateFormatted} · ${r.time} · ${r.guests} Pers.</p>
+          </article>`;
+        }).join('')
+      : `<p style="color:#9ca3af;padding:20px;">Keine Reservierungen für dieses Datum.</p>`;
   }
 
-  // ============================================
-  // ALLE VIEWS AKTUALISIEREN
-  // ============================================
   function updateAllViews() {
     renderOverview();
     renderReservations();
@@ -187,39 +276,65 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ============================================
-  // NAVIGATION
+  // EVENTS – AKTIONEN IN DER TABELLE
   // ============================================
-  navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const target = button.dataset.target;
+  overviewTbody?.addEventListener('click', async e => {
+    const confirmBtn = e.target.closest('.confirm-btn');
+    const cancelBtn  = e.target.closest('.cancel-btn');
+    const deleteBtn  = e.target.closest('.delete-btn');
 
-      navButtons.forEach(btn => {
-        btn.classList.remove('is-active');
-        btn.removeAttribute('aria-current');
-      });
-      panels.forEach(panel => panel.classList.remove('is-visible'));
-
-      button.classList.add('is-active');
-      button.setAttribute('aria-current', 'page');
-      document.getElementById(target)?.classList.add('is-visible');
-
-      // Mobile: Nav nach Klick schliessen
-      if (window.innerWidth <= 900) {
-        nav.classList.remove('is-open');
-        mobileToggle.setAttribute('aria-expanded', 'false');
+    if (confirmBtn) {
+      const id   = Number(confirmBtn.dataset.id);
+      const item = reservations.find(r => r.id === id);
+      await updateStatus(id, 'bestätigt');
+      showToast(`${item?.name || 'Reservierung'} bestätigt.`, 'success');
+    }
+    if (cancelBtn) {
+      const id   = Number(cancelBtn.dataset.id);
+      const item = reservations.find(r => r.id === id);
+      await updateStatus(id, 'storniert');
+      showToast(`${item?.name || 'Reservierung'} storniert.`, 'error');
+    }
+    if (deleteBtn) {
+      const id   = Number(deleteBtn.dataset.id);
+      const item = reservations.find(r => r.id === id);
+      if (confirm(`Reservierung von ${item?.name || 'Gast'} wirklich löschen?`)) {
+        await deleteReservation(id);
+        showToast('Reservierung gelöscht.', 'error');
       }
+    }
+  });
+
+  // ============================================
+  // EVENTS – NEUE RESERVIERUNG
+  // ============================================
+  newReservationForm?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const name    = document.getElementById('name').value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const telefon = document.getElementById('telefon').value.trim();
+    const datum   = document.getElementById('datum').value;
+    const uhrzeit = document.getElementById('uhrzeit').value;
+    const persons = document.getElementById('personen').value;
+
+    if (!name || !datum || !uhrzeit || !persons) {
+      showToast('Bitte alle Pflichtfelder ausfüllen.', 'error');
+      return;
+    }
+
+    await saveReservation({
+      name,
+      email,
+      phone:   telefon,
+      date:    datum,       // YYYY-MM-DD – so erwartet der Server
+      time:    uhrzeit,
+      guests:  parseInt(persons),
+      message: document.getElementById('notiz').value.trim(),
     });
   });
 
-  // Mobile Toggle
-  mobileToggle?.addEventListener('click', () => {
-    const expanded = mobileToggle.getAttribute('aria-expanded') === 'true';
-    mobileToggle.setAttribute('aria-expanded', String(!expanded));
-    nav.classList.toggle('is-open');
-  });
-
   // ============================================
-  // FILTER EVENTS
+  // EVENTS – FILTER
   // ============================================
   overviewDayFilter?.addEventListener('change', renderOverview);
   overviewStatusFilter?.addEventListener('change', renderOverview);
@@ -227,119 +342,49 @@ document.addEventListener('DOMContentLoaded', () => {
   tablesDayFilter?.addEventListener('change', renderTables);
 
   // ============================================
-  // AKTIONEN: BESTÄTIGEN / STORNIEREN
+  // NAVIGATION
   // ============================================
-  overviewTbody?.addEventListener('click', event => {
-    const confirmBtn = event.target.closest('.confirm-btn');
-    const cancelBtn  = event.target.closest('.cancel-btn');
-
-    if (confirmBtn) {
-      const id   = Number(confirmBtn.dataset.id);
-      const item = reservations.find(r => r.id === id);
-      if (item) {
-        item.status = 'confirmed';
-        showToast(`Reservierung von ${item.name} bestätigt.`, 'success');
-        updateAllViews();
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navButtons.forEach(b => { b.classList.remove('is-active'); b.removeAttribute('aria-current'); });
+      panels.forEach(p => p.classList.remove('is-visible'));
+      btn.classList.add('is-active');
+      btn.setAttribute('aria-current', 'page');
+      document.getElementById(btn.dataset.target)?.classList.add('is-visible');
+      if (window.innerWidth <= 900) {
+        nav.classList.remove('is-open');
+        mobileToggle.setAttribute('aria-expanded', 'false');
       }
-    }
-
-    if (cancelBtn) {
-      const id   = Number(cancelBtn.dataset.id);
-      const item = reservations.find(r => r.id === id);
-      if (item) {
-        item.status = 'cancelled';
-        showToast(`Reservierung von ${item.name} storniert.`, 'error');
-        updateAllViews();
-      }
-    }
-  });
-
-  // ============================================
-  // NEUE RESERVIERUNG ANLEGEN
-  // ============================================
-  newReservationForm?.addEventListener('submit', e => {
-    e.preventDefault();
-    const name     = document.getElementById('name').value.trim();
-    const telefon  = document.getElementById('telefon').value.trim();
-    const datum    = document.getElementById('datum').value;
-    const uhrzeit  = document.getElementById('uhrzeit').value;
-    const personen = document.getElementById('personen').value;
-    const tisch    = document.getElementById('tisch').value;
-
-    if (!name || !datum || !uhrzeit || !personen || !tisch) {
-      showToast('Bitte alle Pflichtfelder ausfüllen.', 'error');
-      return;
-    }
-
-    // Datum in deutsches Format umwandeln (YYYY-MM-DD → DD.MM.YYYY)
-    const [year, month, day] = datum.split('-');
-    const datumFormatted = `${day}.${month}.${year}`;
-
-    const tischNr = parseInt(tisch.replace('Tisch ', ''));
-    const newId   = reservations.length ? Math.max(...reservations.map(r => r.id)) + 1 : 1;
-
-    reservations.push({
-      id:      newId,
-      date:    datumFormatted,
-      time:    uhrzeit,
-      name:    name,
-      persons: parseInt(personen),
-      table:   tischNr,
-      status:  'open',
     });
+  });
 
-    showToast(`Reservierung für ${name} wurde angelegt.`, 'success');
-    newReservationForm.reset();
-    updateAllViews();
+  mobileToggle?.addEventListener('click', () => {
+    const open = mobileToggle.getAttribute('aria-expanded') === 'true';
+    mobileToggle.setAttribute('aria-expanded', String(!open));
+    nav.classList.toggle('is-open');
   });
 
   // ============================================
-  // TOAST BENACHRICHTIGUNGEN
+  // TOAST
   // ============================================
   function showToast(message, type = 'success') {
-    // Alten Toast entfernen
     document.querySelector('.toast')?.remove();
-
     const toast = document.createElement('div');
-    toast.className = `toast toast--${type}`;
+    toast.className = 'toast';
     toast.textContent = message;
-
     Object.assign(toast.style, {
-      position:     'fixed',
-      bottom:       '28px',
-      right:        '28px',
-      background:   type === 'success' ? '#2e7d52' : '#c0392b',
-      color:        '#fff',
-      padding:      '14px 22px',
-      borderRadius: '10px',
-      fontFamily:   'var(--font-body)',
-      fontSize:     '.95rem',
-      fontWeight:   '600',
-      boxShadow:    '0 4px 20px rgba(0,0,0,0.18)',
-      zIndex:       '9999',
-      animation:    'slideIn .25s ease',
-      maxWidth:     '320px',
+      position: 'fixed', bottom: '28px', right: '28px',
+      background: type === 'success' ? '#2e7d52' : '#c0392b',
+      color: '#fff', padding: '14px 22px', borderRadius: '10px',
+      fontFamily: 'var(--font-body)', fontSize: '.95rem', fontWeight: '600',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.18)', zIndex: '9999', maxWidth: '320px',
     });
-
-    // CSS Animation inline hinzufügen
-    if (!document.getElementById('toast-style')) {
-      const style = document.createElement('style');
-      style.id = 'toast-style';
-      style.textContent = `
-        @keyframes slideIn {
-          from { opacity:0; transform: translateY(10px); }
-          to   { opacity:1; transform: translateY(0); }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
   }
 
   // ============================================
-  // INIT
+  // START – echte Daten aus Datenbank laden
   // ============================================
-  updateAllViews();
+  loadReservations();
 });
