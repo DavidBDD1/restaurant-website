@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Adminbereich – Bella Italia Reservierungssystem">
+  <title>Admin – Bella Italia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Direkt zum Inhalt springen</a>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Hauptnavigation">
+      <div class="brand">
+        <a href="index.html" class="brand__logo-link" title="Zurück zur Website">
+          <div class="brand__logo" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="19" stroke="#c0392b" stroke-width="1.5"/>
+              <path d="M12 26c2-4 4-8 8-10 4 2 6 6 8 10" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="20" cy="14" r="2.5" fill="#c0392b"/>
+            </svg>
+          </div>
+        </a>
+        <div class="brand__text">
+          <span class="brand__name">Bella <em>Italia</em></span>
+          <span class="brand__sub">Adminbereich</span>
+        </div>
+      </div>
+
+      <button class="mobile-nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="primary-nav" class="nav is-open" aria-label="Bereiche">
+        <button class="nav__link is-active" data-target="overview" aria-current="page" type="button">
+          <span class="nav__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>
+          </span>
+          <span>Übersicht</span>
+        </button>
+        <button class="nav__link" data-target="reservations" type="button">
+          <span class="nav__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zm12 7H5v10h14z"/></svg>
+          </span>
+          <span>Reservierungen</span>
+        </button>
+        <button class="nav__link" data-target="tables" type="button">
+          <span class="nav__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg>
+          </span>
+          <span>Tischübersicht</span>
+        </button>
+        <button class="nav__link" data-target="new-reservation" type="button">
+          <span class="nav__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M11 5h2v14h-2zM5 11h14v2H5z"/></svg>
+          </span>
+          <span>Neue Reservierung</span>
+        </button>
+        <button class="nav__link" data-target="settings" type="button">
+          <span class="nav__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94a7.48 7.48 0 0 0 .05-.94 7.48 7.48 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.28 7.28 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 13.9 2h-3.8a.5.5 0 0 0-.49.42l-.36 2.54a7.28 7.28 0 0 0-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.48a.5.5 0 0 0 .12.64l2.03 1.58a7.48 7.48 0 0 0-.05.94 7.48 7.48 0 0 0 .05.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.5.39 1.05.71 1.63.94l.36 2.54a.5.5 0 0 0 .49.42h3.8a.5.5 0 0 0 .49-.42l.36-2.54c.58-.23 1.13-.55 1.63-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64zM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5z"/></svg>
+          </span>
+          <span>Einstellungen</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <a href="admin-login.html" class="logout-btn">
+          <svg viewBox="0 0 24 24"><path d="M16 13v-2H7V8l-5 4 5 4v-3zm4-9h-8v2h8v14h-8v2h10V4z"/></svg>
+          Abmelden
+        </a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main id="main-content" class="main-content" tabindex="-1">
+
+      <!-- ÜBERSICHT -->
+      <section id="overview" class="panel is-visible" aria-labelledby="overview-title">
+        <header class="page-header">
+          <div>
+            <p class="page-header__eyebrow">Dashboard</p>
+            <h1 id="overview-title">Übersicht</h1>
+          </div>
+          <div class="page-header__date" id="today-date"></div>
+        </header>
+
+        <div class="kpi-grid" aria-label="Tageskennzahlen">
+          <article class="kpi-card">
+            <div class="kpi-card__body">
+              <h2>Reservierungen</h2>
+              <p class="kpi-card__value" id="kpi-total">0</p>
+            </div>
+            <span class="kpi-icon kpi-icon--red" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h2a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2zm12 7H5v10h14z"/></svg>
+            </span>
+          </article>
+          <article class="kpi-card">
+            <div class="kpi-card__body">
+              <h2>Offen</h2>
+              <p class="kpi-card__value" id="kpi-open">0</p>
+            </div>
+            <span class="kpi-icon kpi-icon--amber" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 1a11 11 0 1 0 11 11A11 11 0 0 0 12 1zm1 11.41V6h-2v7h6v-2z"/></svg>
+            </span>
+          </article>
+          <article class="kpi-card">
+            <div class="kpi-card__body">
+              <h2>Bestätigt</h2>
+              <p class="kpi-card__value" id="kpi-confirmed">0</p>
+            </div>
+            <span class="kpi-icon kpi-icon--green" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 1a11 11 0 1 0 11 11A11 11 0 0 0 12 1zm-1.1 15.2-4.1-4.1 1.4-1.4 2.7 2.7 5.9-5.9 1.4 1.4z"/></svg>
+            </span>
+          </article>
+        </div>
+
+        <section class="card">
+          <div class="card__header card__header--filters">
+            <h2>Reservierungsübersicht</h2>
+            <div class="filter-row" aria-label="Filter">
+              <div class="filter-field">
+                <label for="overview-day-filter">Tag</label>
+                <select id="overview-day-filter">
+                  <option value="all">Alle</option>
+                  <option value="09.03.2026">09.03.2026</option>
+                  <option value="10.03.2026">10.03.2026</option>
+                  <option value="11.03.2026">11.03.2026</option>
+                </select>
+              </div>
+              <div class="filter-field">
+                <label for="overview-status-filter">Status</label>
+                <select id="overview-status-filter">
+                  <option value="all">Alle</option>
+                  <option value="open">Offen</option>
+                  <option value="confirmed">Bestätigt</option>
+                  <option value="cancelled">Storniert</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Datum</th>
+                  <th scope="col">Uhrzeit</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Personen</th>
+                  <th scope="col">Tisch</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="overview-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- RESERVIERUNGEN -->
+      <section id="reservations" class="panel" aria-labelledby="reservations-title">
+        <header class="page-header">
+          <div>
+            <p class="page-header__eyebrow">Verwaltung</p>
+            <h1 id="reservations-title">Reservierungen</h1>
+          </div>
+        </header>
+        <section class="card">
+          <div class="card__header card__header--filters">
+            <h2>Alle Reservierungen</h2>
+            <div class="filter-field">
+              <label for="reservations-day-filter">Datum</label>
+              <select id="reservations-day-filter">
+                <option value="all">Alle</option>
+                <option value="09.03.2026">09.03.2026</option>
+                <option value="10.03.2026">10.03.2026</option>
+                <option value="11.03.2026">11.03.2026</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Datum</th>
+                  <th scope="col">Uhrzeit</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Personen</th>
+                  <th scope="col">Tisch</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody id="reservations-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- TISCHÜBERSICHT -->
+      <section id="tables" class="panel" aria-labelledby="tables-title">
+        <header class="page-header">
+          <div>
+            <p class="page-header__eyebrow">Auslastung</p>
+            <h1 id="tables-title">Tischübersicht</h1>
+          </div>
+        </header>
+        <section class="card card--padded">
+          <div class="filter-field filter-field--single">
+            <label for="tables-day-filter">Datum</label>
+            <select id="tables-day-filter">
+              <option value="09.03.2026">09.03.2026</option>
+              <option value="10.03.2026">10.03.2026</option>
+              <option value="11.03.2026">11.03.2026</option>
+            </select>
+          </div>
+        </section>
+        <div id="tables-grid" class="tables-grid"></div>
+      </section>
+
+      <!-- NEUE RESERVIERUNG -->
+      <section id="new-reservation" class="panel" aria-labelledby="new-title">
+        <header class="page-header">
+          <div>
+            <p class="page-header__eyebrow">Manuell erfassen</p>
+            <h1 id="new-title">Neue Reservierung</h1>
+          </div>
+        </header>
+        <section class="card">
+          <div class="card__header"><h2>Formular</h2></div>
+          <div class="form-area">
+            <form class="form-grid" id="new-reservation-form">
+              <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" placeholder="z. B. Müller"></div>
+              <div class="field"><label for="telefon">Telefon</label><input id="telefon" name="telefon" type="tel" placeholder="+41 ..."></div>
+              <div class="field"><label for="email">E-Mail</label><input id="email" name="email" type="email" placeholder="gast@beispiel.ch"></div>
+              <div class="field"><label for="datum">Datum</label><input id="datum" name="datum" type="date"></div>
+              <div class="field">
+                <label for="uhrzeit">Uhrzeit</label>
+                <select id="uhrzeit" name="uhrzeit">
+                  <option value="">Bitte wählen</option>
+                  <option>17:00</option><option>17:30</option><option>18:00</option><option>18:30</option>
+                  <option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option>
+                  <option>21:00</option><option>21:30</option><option>22:00</option><option>22:30</option>
+                </select>
+              </div>
+              <div class="field"><label for="personen">Personenanzahl</label><input id="personen" name="personen" type="number" min="1" max="12" placeholder="1–12"></div>
+              <div class="field">
+                <label for="tisch">Tisch</label>
+                <select id="tisch" name="tisch">
+                  <option value="">Bitte wählen</option>
+                  <option>Tisch 1</option><option>Tisch 2</option><option>Tisch 3</option><option>Tisch 4</option>
+                  <option>Tisch 5</option><option>Tisch 6</option><option>Tisch 7</option><option>Tisch 8</option>
+                  <option>Tisch 9</option><option>Tisch 10</option><option>Tisch 11</option><option>Tisch 12</option>
+                </select>
+              </div>
+              <div class="field field--full"><label for="notiz">Notiz</label><textarea id="notiz" name="notiz" placeholder="Besondere Wünsche, Allergien ..."></textarea></div>
+              <div class="field field--full">
+                <div class="button-row">
+                  <button class="primary-button" type="submit">Reservierung anlegen</button>
+                  <button class="secondary-button" type="reset">Formular leeren</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+      </section>
+
+      <!-- EINSTELLUNGEN -->
+      <section id="settings" class="panel" aria-labelledby="settings-title">
+        <header class="page-header">
+          <div>
+            <p class="page-header__eyebrow">Konfiguration</p>
+            <h1 id="settings-title">Einstellungen</h1>
+          </div>
+        </header>
+        <section class="card">
+          <div class="card__header"><h2>Benachrichtigungen</h2></div>
+          <div class="form-area">
+            <form class="form-grid">
+              <div class="field field--full"><label for="email-settings">Admin-E-Mail</label><input id="email-settings" type="email" value="admin@bellaitalia.ch"></div>
+              <div class="field">
+                <label for="sprache">Sprache</label>
+                <select id="sprache"><option>Deutsch</option><option>Italienisch</option><option>Englisch</option></select>
+              </div>
+              <div class="field">
+                <label for="ansicht">Startansicht</label>
+                <select id="ansicht"><option>Übersicht</option><option>Reservierungen</option></select>
+              </div>
+              <div class="field field--full">
+                <div class="button-row">
+                  <button class="primary-button" type="submit">Änderungen speichern</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
