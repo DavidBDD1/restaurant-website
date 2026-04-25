@@ -24,133 +24,221 @@
     </div>
   </nav>
 
-  <!-- Hero -->
   <div class="hero" style="padding: 3rem 2rem;">
     <p class="eyebrow">Cucina Italiana</p>
     <h1 style="font-size: 2.2rem;">Unsere <em>Speisekarte</em></h1>
   </div>
 
-  <!-- Vorspeisen -->
-  <div class="divider"><span>✦</span></div>
-  <h2 class="section-title">Vorspeisen</h2>
-  <p class="section-sub">Antipasti</p>
+  <!-- Filter Buttons -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">Alle</button>
+    <button class="filter-btn" data-filter="antipasti">🥗 Vorspeisen</button>
+    <button class="filter-btn" data-filter="pasta">🍝 Pasta</button>
+    <button class="filter-btn" data-filter="pizza">🍕 Pizza</button>
+    <button class="filter-btn" data-filter="dolci">🍮 Desserts</button>
+  </div>
 
-  <section class="specials">
-    <div class="dishes">
-      <div class="dish">
-        <div class="dish-name">Bruschetta al Pomodoro</div>
-        <div class="dish-desc">Geröstetes Brot mit frischen Tomaten, Knoblauch und Basilikum</div>
-        <div class="dish-price">CHF 9.–</div>
+  <!-- Vorspeisen -->
+  <div class="menu-section" data-category="antipasti">
+    <div class="divider"><span>✦</span></div>
+    <h2 class="section-title">Vorspeisen</h2>
+    <p class="section-sub">Antipasti</p>
+    <section class="specials">
+      <div class="dishes">
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Bruschetta al Pomodoro</div>
+          <div class="dish-desc">Geröstetes Brot mit frischen Tomaten, Knoblauch und Basilikum</div>
+          <div class="dish-price">CHF 9.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"></div>
+          <div class="dish-name">Carpaccio di Manzo</div>
+          <div class="dish-desc">Hauchdünnes Rindfleisch mit Rucola und Parmigiano</div>
+          <div class="dish-price">CHF 16.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"></div>
+          <div class="dish-name">Burrata e Prosciutto</div>
+          <div class="dish-desc">Cremige Burrata mit Parmaschinken und Kirschtomaten</div>
+          <div class="dish-price">CHF 18.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Zuppa del Giorno</div>
+          <div class="dish-desc">Tagessuppe nach Küchenchef-Empfehlung</div>
+          <div class="dish-price">CHF 8.–</div>
+        </div>
       </div>
-      <div class="dish">
-        <div class="dish-name">Carpaccio di Manzo</div>
-        <div class="dish-desc">Hauchdünnes Rindfleisch mit Rucola und Parmigiano</div>
-        <div class="dish-price">CHF 16.–</div>
-      </div>
-      <div class="dish">
-        <div class="dish-name">Burrata e Prosciutto</div>
-        <div class="dish-desc">Cremige Burrata mit Parmaschinken und Kirschtomaten</div>
-        <div class="dish-price">CHF 18.–</div>
-      </div>
-      <div class="dish">
-        <div class="dish-name">Zuppa del Giorno</div>
-        <div class="dish-desc">Tagessuppe nach Küchenchef-Empfehlung</div>
-        <div class="dish-price">CHF 8.–</div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- Pasta -->
-  <div class="divider"><span>✦</span></div>
-  <h2 class="section-title">Pasta</h2>
-  <p class="section-sub">Hausgemacht · Fatto a mano</p>
-
-  <section class="specials">
-    <div class="dishes">
-      <div class="dish">
-        <div class="dish-name">Tagliatelle al Ragù</div>
-        <div class="dish-desc">Hausgemachte Pasta mit langsam geschmortem Rindfleisch</div>
-        <div class="dish-price">CHF 24.–</div>
+  <div class="menu-section" data-category="pasta">
+    <div class="divider"><span>✦</span></div>
+    <h2 class="section-title">Pasta</h2>
+    <p class="section-sub">Hausgemacht · Fatto a mano</p>
+    <section class="specials">
+      <div class="dishes">
+        <div class="dish">
+          <div class="dish-tags"></div>
+          <div class="dish-name">Tagliatelle al Ragù</div>
+          <div class="dish-desc">Hausgemachte Pasta mit langsam geschmortem Rindfleisch</div>
+          <div class="dish-price">CHF 24.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"></div>
+          <div class="dish-name">Spaghetti Carbonara</div>
+          <div class="dish-desc">Ei, Pecorino, Guanciale – klassisch römisch</div>
+          <div class="dish-price">CHF 22.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Penne all'Arrabbiata</div>
+          <div class="dish-desc">Würzige Tomatensauce mit Knoblauch und Peperoncino</div>
+          <div class="dish-price">CHF 19.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Gnocchi al Gorgonzola</div>
+          <div class="dish-desc">Hausgemachte Gnocchi in cremiger Gorgonzola-Sauce</div>
+          <div class="dish-price">CHF 23.–</div>
+        </div>
       </div>
-      <div class="dish">
-        <div class="dish-name">Spaghetti Carbonara</div>
-        <div class="dish-desc">Ei, Pecorino, Guanciale – klassisch römisch</div>
-        <div class="dish-price">CHF 22.–</div>
-      </div>
-      <div class="dish">
-        <div class="dish-name">Penne all'Arrabbiata</div>
-        <div class="dish-desc">Würzige Tomatensauce mit Knoblauch und Peperoncino</div>
-        <div class="dish-price">CHF 19.–</div>
-      </div>
-      <div class="dish">
-        <div class="dish-name">Gnocchi al Gorgonzola</div>
-        <div class="dish-desc">Hausgemachte Gnocchi in cremiger Gorgonzola-Sauce</div>
-        <div class="dish-price">CHF 23.–</div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- Pizza -->
-  <div class="divider"><span>✦</span></div>
-  <h2 class="section-title">Pizza</h2>
-  <p class="section-sub">Im Holzofen gebacken · Forno a legna</p>
-
-  <section class="specials">
-    <div class="dishes">
-      <div class="dish">
-        <div class="dish-name">Margherita</div>
-        <div class="dish-desc">Tomatensauce, Büffelmozzarella, Basilikum</div>
-        <div class="dish-price">CHF 19.–</div>
+  <div class="menu-section" data-category="pizza">
+    <div class="divider"><span>✦</span></div>
+    <h2 class="section-title">Pizza</h2>
+    <p class="section-sub">Im Holzofen gebacken · Forno a legna</p>
+    <section class="specials">
+      <div class="dishes">
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Margherita</div>
+          <div class="dish-desc">Tomatensauce, Büffelmozzarella, Basilikum</div>
+          <div class="dish-price">CHF 19.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag spicy">🌶 Scharf</span></div>
+          <div class="dish-name">Diavola</div>
+          <div class="dish-desc">Tomatensauce, Mozzarella, scharfe Salami</div>
+          <div class="dish-price">CHF 22.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"></div>
+          <div class="dish-name">Quattro Stagioni</div>
+          <div class="dish-desc">Schinken, Pilze, Artischocken, Oliven</div>
+          <div class="dish-price">CHF 24.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag special">⭐ Spezialität</span></div>
+          <div class="dish-name">Pizza Bella Italia</div>
+          <div class="dish-desc">Unsere Hausspezialität – fragen Sie den Kellner</div>
+          <div class="dish-price">CHF 26.–</div>
+        </div>
       </div>
-      <div class="dish">
-        <div class="dish-name">Diavola</div>
-        <div class="dish-desc">Tomatensauce, Mozzarella, scharfe Salami</div>
-        <div class="dish-price">CHF 22.–</div>
-      </div>
-      <div class="dish">
-        <div class="dish-name">Quattro Stagioni</div>
-        <div class="dish-desc">Schinken, Pilze, Artischocken, Oliven</div>
-        <div class="dish-price">CHF 24.–</div>
-      </div>
-      <div class="dish">
-        <div class="dish-name">Pizza Bella Italia</div>
-        <div class="dish-desc">Unsere Hausspezialität – fragen Sie den Kellner</div>
-        <div class="dish-price">CHF 26.–</div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- Desserts -->
-  <div class="divider"><span>✦</span></div>
-  <h2 class="section-title">Desserts</h2>
-  <p class="section-sub">Dolci</p>
+  <div class="menu-section" data-category="dolci">
+    <div class="divider"><span>✦</span></div>
+    <h2 class="section-title">Desserts</h2>
+    <p class="section-sub">Dolci</p>
+    <section class="specials">
+      <div class="dishes">
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Tiramisù</div>
+          <div class="dish-desc">Klassisches Dessert nach Originalrezept aus Venetien</div>
+          <div class="dish-price">CHF 9.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Panna Cotta</div>
+          <div class="dish-desc">Mit Waldbeeren-Coulis und frischen Beeren</div>
+          <div class="dish-price">CHF 8.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Gelato Misto</div>
+          <div class="dish-desc">3 Kugeln hausgemachtes Glacé nach Wahl</div>
+          <div class="dish-price">CHF 7.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🌿 Vegetarisch</span></div>
+          <div class="dish-name">Caffè & Biscotti</div>
+          <div class="dish-desc">Espresso mit hausgemachten Mandelkeksen</div>
+          <div class="dish-price">CHF 6.–</div>
+        </div>
+      </div>
+    </section>
+  </div>
 
-  <section class="specials">
-    <div class="dishes">
-      <div class="dish">
-        <div class="dish-name">Tiramisù</div>
-        <div class="dish-desc">Klassisches Dessert nach Originalrezept aus Venetien</div>
-        <div class="dish-price">CHF 9.–</div>
+  <!-- Getränke -->
+  <div class="menu-section" data-category="drinks">
+    <div class="divider"><span>✦</span></div>
+    <h2 class="section-title">Getränke</h2>
+    <p class="section-sub">Bevande</p>
+    <section class="specials">
+      <div class="dishes">
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🍷 Wein</span></div>
+          <div class="dish-name">Chianti Classico</div>
+          <div class="dish-desc">Toskanischer Rotwein, trocken, fruchtig – dl 1.5</div>
+          <div class="dish-price">CHF 8.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag veg">🍷 Wein</span></div>
+          <div class="dish-name">Pinot Grigio</div>
+          <div class="dish-desc">Leichter Weisswein aus dem Friaul – dl 1.5</div>
+          <div class="dish-price">CHF 7.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag special">🥂 Aperitivo</span></div>
+          <div class="dish-name">Aperol Spritz</div>
+          <div class="dish-desc">Aperol, Prosecco, Sodawasser, Orange</div>
+          <div class="dish-price">CHF 12.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag special">🥂 Aperitivo</span></div>
+          <div class="dish-name">Negroni</div>
+          <div class="dish-desc">Gin, Campari, roter Wermut – klassisch</div>
+          <div class="dish-price">CHF 14.–</div>
+        </div>
       </div>
-      <div class="dish">
-        <div class="dish-name">Panna Cotta</div>
-        <div class="dish-desc">Mit Waldbeeren-Coulis und frischen Beeren</div>
-        <div class="dish-price">CHF 8.–</div>
+      <div class="dishes" style="margin-top: 1rem;">
+        <div class="dish">
+          <div class="dish-tags"></div>
+          <div class="dish-name">San Pellegrino</div>
+          <div class="dish-desc">Natürliches Mineralwasser, 50cl</div>
+          <div class="dish-price">CHF 4.–</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"></div>
+          <div class="dish-name">Espresso</div>
+          <div class="dish-desc">Traditioneller italienischer Espresso</div>
+          <div class="dish-price">CHF 3.50</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"></div>
+          <div class="dish-name">Cappuccino</div>
+          <div class="dish-desc">Espresso mit aufgeschäumter Milch</div>
+          <div class="dish-price">CHF 4.50</div>
+        </div>
+        <div class="dish">
+          <div class="dish-tags"><span class="tag special">⭐ Empfehlung</span></div>
+          <div class="dish-name">Limonata Bella Italia</div>
+          <div class="dish-desc">Hausgemachte Zitronenlimonade mit frischer Minze</div>
+          <div class="dish-price">CHF 5.–</div>
+        </div>
       </div>
-      <div class="dish">
-        <div class="dish-name">Gelato Misto</div>
-        <div class="dish-desc">3 Kugeln hausgemachtes Glacé nach Wahl</div>
-        <div class="dish-price">CHF 7.–</div>
-      </div>
-      <div class="dish">
-        <div class="dish-name">Caffè & Biscotti</div>
-        <div class="dish-desc">Espresso mit hausgemachten Mandelkeksen</div>
-        <div class="dish-price">CHF 6.–</div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <!-- CTA -->
   <div class="reserve-cta">
     <h2>Hunger bekommen?</h2>
     <p>Reservieren Sie jetzt Ihren Tisch – wir freuen uns auf Sie.</p>
@@ -167,5 +255,6 @@
     <div>© 2025 Bella Italia · Luzern</div>
   </footer>
 
+  <script src="menu.js"></script>
 </body>
 </html>
