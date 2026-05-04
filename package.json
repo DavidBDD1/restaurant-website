@@ -21,6 +21,8 @@
   "homepage": "https://github.com/DavidBDD1/restaurant-website#readme",
   "dependencies": {
     "express": "^5.2.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^16.13.2",
     "sqlite3": "^6.0.1"
   }
 }

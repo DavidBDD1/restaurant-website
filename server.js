@@ -1,6 +1,8 @@
 const express = require("express");
 const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
+const { graphqlHTTP } = require('express-graphql');
+const { buildSchema }  = require('graphql');
 
 function berechneAlleBetroffenenSlots(time) {
   const slots = new Set();
@@ -54,10 +56,12 @@ CREATE TABLE IF NOT EXISTS reservations (
 )
 `);
 
+// ── TEST ──
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend läuft!" });
 });
 
+// ── VERFÜGBARKEIT PRÜFEN ──
 app.get("/api/check-availability", (req, res) => {
   const { date, time } = req.query;
   if (!date || !time) return res.json({ available: true });
@@ -78,6 +82,7 @@ app.get("/api/check-availability", (req, res) => {
   );
 });
 
+// ── RESERVATION SUCHEN (für Stornierung) ──
 app.get("/api/reservations/find", (req, res) => {
   const { email, date } = req.query;
 
@@ -92,6 +97,7 @@ app.get("/api/reservations/find", (req, res) => {
   );
 });
 
+// ── ALLE RESERVIERUNGEN ABRUFEN ──
 app.get("/api/reservations", (req, res) => {
   db.all("SELECT * FROM reservations", [], (err, rows) => {
     if (err) {
@@ -102,6 +108,7 @@ app.get("/api/reservations", (req, res) => {
   });
 });
 
+// ── NEUE RESERVIERUNG SPEICHERN ──
 app.post("/api/reservations", (req, res) => {
   const { name, email, phone, date, time, message } = req.body;
   const guests = parseInt(req.body.guests);
@@ -140,6 +147,7 @@ app.post("/api/reservations", (req, res) => {
   );
 });
 
+// ── STATUS ÄNDERN ──
 app.put("/api/reservations/:id", (req, res) => {
   const { status } = req.body;
   const id = req.params.id;
@@ -157,6 +165,7 @@ app.put("/api/reservations/:id", (req, res) => {
   );
 });
 
+// ── RESERVIERUNG LÖSCHEN ──
 app.delete("/api/reservations/:id", (req, res) => {
   const id = req.params.id;
 
@@ -173,11 +182,61 @@ app.delete("/api/reservations/:id", (req, res) => {
   );
 });
 
-// 404 – muss immer ganz am Ende stehen!
+// ============================================
+// GRAPHQL – Zweite Technologievariante
+// ============================================
+
+// 1. Schema: definiert welche Daten abrufbar sind
+const schema = buildSchema(`
+  type Reservation {
+    id:      Int
+    name:    String
+    email:   String
+    date:    String
+    time:    String
+    guests:  Int
+    status:  String
+  }
+
+  type Query {
+    reservations: [Reservation]
+    reservation(id: Int!): Reservation
+  }
+`);
+
+// 2. Resolver: holt die echten Daten aus SQLite
+const root = {
+  reservations: () => {
+    return new Promise((resolve, reject) => {
+      db.all("SELECT * FROM reservations", [], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+  reservation: ({ id }) => {
+    return new Promise((resolve, reject) => {
+      db.get("SELECT * FROM reservations WHERE id = ?", [id], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+  }
+};
+
+// 3. Endpunkt aktivieren (graphiql = interaktives Testfenster im Browser)
+app.use('/graphql', graphqlHTTP({
+  schema,
+  rootValue: root,
+  graphiql: true
+}));
+
+// ── 404 – immer nach allen Routen! ──
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
+// ── SERVER STARTEN – immer ganz zuletzt! ──
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`);
 });
